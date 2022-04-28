@@ -1,5 +1,5 @@
 <template>
-  <nav class="relative z-10 max-w-full border-b border-b-slate-200">
+  <nav class="relative z-10 max-w-full lg:border-b lg:border-b-slate-200">
     <div
       class="max-w-screen-xl mx-auto flex flex-col lg:flex-row lg:justify-between lg:items-center py-5"
     >
@@ -64,8 +64,8 @@
           class="w-full flex items-center lg:justify-between"
         >
           <ul :class="[open ? 'flex-col' : 'lg:flex']">
-            <NavLink name="Home" url="#" />
-            <NavLink name="Article" url="#" />
+            <NavLink name="Home" url="/" />
+            <NavLink name="Article" url="/article" />
             <NavLink name="Create" url="#" />
           </ul>
           <div

@@ -19,6 +19,9 @@
       <div
         class="grid grid-cols-1 md:grid-cols-2 md:gap-2 lg:grid-cols-3 gap-0 lg:gap-4 px-4 lg:px-40"
       >
+        <div class="text-center" v-if="$fetchState.pending">
+          Loading fetching...
+        </div>
         <div v-for="article in articles" :key="article.id">
           <Card :article="article" />
         </div>
