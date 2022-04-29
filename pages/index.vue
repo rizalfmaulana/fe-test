@@ -48,7 +48,6 @@ export default {
         "https://restify-sahaware-boilerplate.herokuapp.com/api/article"
       );
       this.articles = data.data.content.slice(4, 7);
-      console.log(this.articles);
     },
   },
 };

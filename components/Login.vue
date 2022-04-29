@@ -9,9 +9,12 @@
     >
       <h3 class="text-4xl">Login</h3>
       <p class="mt-2">
-        Don't have an account <span class="text-[#ED3237]">Create Account</span>
+        Don't have an account
+        <span class="text-[#ED3237] cursor-pointer" @click="$emit('open-modal')"
+          >Create Account</span
+        >
       </p>
-      <form class="mt-12">
+      <form class="mt-12" @submit.prevent="submit">
         <div class="mb-6">
           <label class="block mb-2 text-gray-700 text-base" for="email">
             Email
@@ -21,6 +24,7 @@
             id="email"
             type="email"
             placeholder="Enter your Email"
+            v-model="email"
           />
         </div>
         <div class="mb-12">
@@ -32,15 +36,40 @@
             id="password"
             type="password"
             placeholder="Enter your Password"
+            v-model="password"
           />
         </div>
-        <button class="bg-[#ED3237] text-white py-3 px-4">Log in</button>
+        <button type="sumbit" class="bg-[#ED3237] text-white py-3 px-4">
+          Log in
+        </button>
       </form>
     </div>
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
   name: "Login",
+  data() {
+    return {
+      email: "",
+      password: "",
+    };
+  },
+  methods: {
+    async submit() {
+      let datas = {
+        email: this.email,
+        password: this.password,
+      };
+      const data = await axios.post(
+        "https://restify-sahaware-boilerplate.herokuapp.com/api/auth/login",
+        datas
+      );
+      this.$emit("close-modal");
+      this.email = "";
+      this.password = "";
+    },
+  },
 };
 </script>

@@ -4,14 +4,17 @@
     @click="$emit('close-modal')"
   >
     <div
-      class="w-[500px] h-[500px] pt-20 mt-20 px-20 rounded-lg bg-white"
+      class="w-[500px] h-[auto] pt-20 mt-20 px-20 rounded-lg bg-white"
       @click.stop
     >
       <h3 class="text-4xl">Create Account</h3>
       <p class="mt-2">
-        Have an account <span class="text-[#ED3237]">Login</span>
+        Have an account
+        <span class="text-[#ED3237] cursor-pointer" @click="$emit('open-modal')"
+          >Login</span
+        >
       </p>
-      <form class="mt-12">
+      <form class="mt-12" @submit.prevent="submit">
         <div class="mb-6">
           <label class="block mb-2 text-gray-700 text-base" for="name">
             Name
@@ -21,6 +24,7 @@
             id="name"
             type="text"
             placeholder="Enter your Name"
+            v-model="name"
           />
         </div>
         <div class="mb-6">
@@ -32,6 +36,7 @@
             id="email"
             type="email"
             placeholder="Enter your Email"
+            v-model="email"
           />
         </div>
         <div class="mb-6">
@@ -43,6 +48,7 @@
             id="phone"
             type="text"
             placeholder="Enter your Phone Number"
+            v-model="phone"
           />
         </div>
         <div class="mb-12">
@@ -54,15 +60,47 @@
             id="password"
             type="password"
             placeholder="Enter your Password"
+            v-model="password"
           />
         </div>
-        <button class="bg-[#ED3237] text-white py-3 px-4">Log in</button>
+        <button type="submit" class="bg-[#ED3237] text-white py-3 px-4">
+          Create Account
+        </button>
       </form>
     </div>
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
   name: "Register",
+  data() {
+    return {
+      name: "",
+      email: "",
+      password: "",
+      phone: "",
+    };
+  },
+  methods: {
+    async submit() {
+      let datas = {
+        name: this.name,
+        email: this.email,
+        password: this.password,
+        phone: this.phone,
+      };
+      const data = await axios.post(
+        "https://restify-sahaware-boilerplate.herokuapp.com/api/auth/register",
+        datas
+      );
+      console.log(data);
+      this.$emit("close-modal");
+      this.name = "";
+      this.email = "";
+      this.password = "";
+      this.phone = "";
+    },
+  },
 };
 </script>

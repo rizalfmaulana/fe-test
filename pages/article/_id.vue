@@ -25,7 +25,6 @@ export default {
     const response = await axios.get(
       `https://restify-sahaware-boilerplate.herokuapp.com/api/article/${this.$route.params.id}`
     );
-    console.log(response);
     this.article = response.data.content;
   },
 };
