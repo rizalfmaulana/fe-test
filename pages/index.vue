@@ -13,7 +13,7 @@
       />
     </div>
     <div class="mt-8 lg:mt-20">
-      <h2 class="text-center text-4xl lgtext-5xl font-bold mb-8 lg:mb-12">
+      <h2 class="text-center text-4xl lg:text-5xl font-bold mb-8 lg:mb-12">
         Article
       </h2>
       <div

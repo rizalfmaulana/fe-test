@@ -1,5 +1,5 @@
 <template>
-  <nav class="relative z-10 max-w-full lg:border-b lg:border-b-slate-200">
+  <nav class="relative max-w-full lg:border-b lg:border-b-slate-200">
     <div
       class="max-w-screen-xl mx-auto flex flex-col lg:flex-row lg:justify-between lg:items-center py-5"
     >
@@ -66,13 +66,13 @@
           <ul :class="[open ? 'flex-col' : 'lg:flex']">
             <NavLink name="Home" url="/" />
             <NavLink name="Article" url="/article" />
-            <NavLink name="Create" url="#" />
+            <NavLink name="Create" url="/article/create" />
           </ul>
           <div
             :class="[open ? 'flex-col' : 'lg:flex']"
             class="text-blue-400 text-sm"
           >
-            <button>Login</button>
+            <button @click="$emit('open-modal')">Login</button>
           </div>
         </div>
       </div>
