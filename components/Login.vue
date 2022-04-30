@@ -21,7 +21,7 @@
           </label>
           <input
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="email"
+            id="emaill"
             type="email"
             placeholder="Enter your Email"
             v-model="email"
@@ -33,7 +33,7 @@
           </label>
           <input
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="password"
+            id="passwordd"
             type="password"
             placeholder="Enter your Password"
             v-model="password"
@@ -48,6 +48,8 @@
 </template>
 <script>
 import axios from "axios";
+import Cookie from "js-cookie";
+import { mapActions } from "vuex";
 export default {
   name: "Login",
   data() {
@@ -57,15 +59,20 @@ export default {
     };
   },
   methods: {
+    ...mapActions({
+      setToken: "auth/setToken",
+    }),
     async submit() {
       let datas = {
         email: this.email,
         password: this.password,
       };
-      const data = await axios.post(
+      const { data } = await axios.post(
         "https://restify-sahaware-boilerplate.herokuapp.com/api/auth/login",
         datas
       );
+      this.setToken(data.content[0].token);
+      this.$router.go();
       this.$emit("close-modal");
       this.email = "";
       this.password = "";

@@ -72,7 +72,8 @@
             :class="[open ? 'flex-col' : 'lg:flex']"
             class="text-blue-400 text-sm"
           >
-            <button @click="$emit('open-modal')">Login</button>
+            <button v-if="!token" @click="$emit('open-modal')">Login</button>
+            <button @click="logout" v-else>Logout</button>
           </div>
         </div>
       </div>
@@ -80,12 +81,20 @@
   </nav>
 </template>
 <script>
+import Cookies from "js-cookie";
 export default {
   name: "Navbar",
   data() {
     return {
       open: false,
+      token: Cookies.get("token"),
     };
+  },
+  methods: {
+    logout() {
+      Cookies.remove("token");
+      this.$router.go();
+    },
   },
 };
 </script>

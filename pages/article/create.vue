@@ -11,6 +11,7 @@
             <input
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="title"
+              name="title"
               type="text"
               placeholder="Enter your Article Title"
               v-model="title"
@@ -19,8 +20,8 @@
           <div>
             <textarea
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              name=""
-              id=""
+              name="description"
+              id="description"
               cols="30"
               rows="30"
               placeholder="Write your story"
@@ -36,8 +37,8 @@
             </label>
             <textarea
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              name=""
-              id="description"
+              name="short_description"
+              id="short_description"
               cols="30"
               rows="10"
               placeholder="Enter your Article Short Description"
@@ -50,7 +51,8 @@
               <input
                 type="file"
                 class="block w-full text-sm rounded border border-gray-400 text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#E9ECEF] file:text-[#6C757D] hover:file:bg-violet-100"
-                ref="photo"
+                ref="file"
+                v-on:change="handleFileUpload()"
               />
             </label>
           </div>
@@ -58,7 +60,8 @@
             <label class="block">Categories</label>
             <div class="dropdown w-full">
               <select
-                name="category"
+                name="category_id"
+                id="category_id"
                 v-model="category_id"
                 class="dropdown-select"
               >
@@ -76,13 +79,13 @@
           <div class="mt-6">
             <div class="flex items-center justify-between w-full mb-8">
               <span>Published</span>
-              <label for="toogleA" class="flex items-center cursor-pointer">
+              <label for="is_visible" class="flex items-center cursor-pointer">
                 <!-- toggle -->
                 <div class="relative">
                   <!-- input -->
                   <input
                     v-model="is_visible"
-                    id="toogleA"
+                    id="is_visible"
                     type="checkbox"
                     class="sr-only"
                   />
@@ -111,6 +114,8 @@
 </template>
 <script>
 import axios from "axios";
+import { mapGetters } from "vuex";
+import Cookies from "js-cookie";
 export default {
   data() {
     return {
@@ -118,19 +123,27 @@ export default {
       short_description: "",
       description: "",
       category_id: "",
-      is_visible: "",
+      is_visible: false,
       category: [],
+      file: "",
     };
   },
   async fetch() {
     await this.getcategory();
   },
+  computed: {
+    ...mapGetters({
+      token: "auth/token",
+    }),
+  },
   methods: {
+    handleFileUpload() {
+      this.file = this.$refs.file.files[0];
+    },
     async getcategory() {
       const { data } = await axios.get(
         "https://restify-sahaware-boilerplate.herokuapp.com/api/article-category"
       );
-      console.log(data);
       this.category = data.content;
     },
     async submit() {
@@ -140,17 +153,23 @@ export default {
         description: this.description,
         category_id: this.category_id,
         is_visible: String(this.is_visible),
-        image: this.$refs.photo.files[0],
+        image: this.file,
       };
-      // const data = await axios.post(
-      //   "https://restify-sahaware-boilerplate.herokuapp.com/api/auth/register",
-      //   datas
-      // );
-      console.log(datas);
-      // this.name = "";
-      // this.email = "";
-      // this.password = "";
-      // this.phone = "";
+      const tokens = Cookies.get("token");
+      const { data } = await axios.post(
+        "https://restify-sahaware-boilerplate.herokuapp.com/api/article/create",
+        datas,
+        {
+          headers: {
+            Authorization: "Bearer " + tokens,
+          },
+        }
+      );
+      this.$router.push({ path: "/article" });
+      this.name = "";
+      this.email = "";
+      this.password = "";
+      this.phone = "";
     },
   },
 };
