@@ -1,6 +1,6 @@
 <template>
   <div class="mt-0 lg:mt-20">
-    <form class="px-4 lg:px-32">
+    <form class="px-4 lg:px-32" @submit.prevent="submit">
       <div class="flex flex-col lg:flex-row gap-6">
         <div class="w-full lg:w-2/3">
           <h4 class="text-2xl mb-8 font-medium">Create New Article</h4>
@@ -13,6 +13,7 @@
               id="title"
               type="text"
               placeholder="Enter your Article Title"
+              v-model="title"
             />
           </div>
           <div>
@@ -23,6 +24,7 @@
               cols="30"
               rows="30"
               placeholder="Write your story"
+              v-model="description"
             ></textarea>
           </div>
         </div>
@@ -39,6 +41,7 @@
               cols="30"
               rows="10"
               placeholder="Enter your Article Short Description"
+              v-model="short_description"
             ></textarea>
           </div>
           <div>
@@ -47,17 +50,26 @@
               <input
                 type="file"
                 class="block w-full text-sm rounded border border-gray-400 text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#E9ECEF] file:text-[#6C757D] hover:file:bg-violet-100"
+                ref="photo"
               />
             </label>
           </div>
           <div class="mt-6">
             <label class="block">Categories</label>
             <div class="dropdown w-full">
-              <select name="one" class="dropdown-select">
+              <select
+                name="category"
+                v-model="category_id"
+                class="dropdown-select"
+              >
                 <option value="">Select Category</option>
-                <option value="1">Option #1</option>
-                <option value="2">Option #2</option>
-                <option value="3">Option #3</option>
+                <option
+                  v-for="cate in category"
+                  :key="cate.id"
+                  :value="cate.id"
+                >
+                  {{ cate.title }}
+                </option>
               </select>
             </div>
           </div>
@@ -68,7 +80,12 @@
                 <!-- toggle -->
                 <div class="relative">
                   <!-- input -->
-                  <input id="toogleA" type="checkbox" class="sr-only" />
+                  <input
+                    v-model="is_visible"
+                    id="toogleA"
+                    type="checkbox"
+                    class="sr-only"
+                  />
                   <!-- line -->
                   <div
                     class="w-10 h-4 bg-[#1976D2] rounded-full shadow-inner"
@@ -93,11 +110,48 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
       title: "",
+      short_description: "",
+      description: "",
+      category_id: "",
+      is_visible: "",
+      category: [],
     };
+  },
+  async fetch() {
+    await this.getcategory();
+  },
+  methods: {
+    async getcategory() {
+      const { data } = await axios.get(
+        "https://restify-sahaware-boilerplate.herokuapp.com/api/article-category"
+      );
+      console.log(data);
+      this.category = data.content;
+    },
+    async submit() {
+      let datas = {
+        title: this.title,
+        short_description: this.short_description,
+        description: this.description,
+        category_id: this.category_id,
+        is_visible: String(this.is_visible),
+        image: this.$refs.photo.files[0],
+      };
+      // const data = await axios.post(
+      //   "https://restify-sahaware-boilerplate.herokuapp.com/api/auth/register",
+      //   datas
+      // );
+      console.log(datas);
+      // this.name = "";
+      // this.email = "";
+      // this.password = "";
+      // this.phone = "";
+    },
   },
 };
 </script>
