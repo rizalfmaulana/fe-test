@@ -25,7 +25,11 @@
             type="text"
             placeholder="Enter your Name"
             v-model="name"
+            required
           />
+          <span class="text-red-600 text-sm" v-if="error.name">{{
+            error.name
+          }}</span>
         </div>
         <div class="mb-6">
           <label class="block mb-2 text-gray-700 text-base" for="email">
@@ -35,6 +39,7 @@
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="email"
             type="email"
+            required
             placeholder="Enter your Email"
             v-model="email"
           />
@@ -48,8 +53,13 @@
             id="phone"
             type="text"
             placeholder="Enter your Phone Number"
+            pattern="^08[0-9]*$"
             v-model="phone"
+            required
           />
+          <span class="text-red-600 text-sm" v-if="error.phone">{{
+            error.phone
+          }}</span>
         </div>
         <div class="mb-12">
           <label class="block text-gray-700 text-base" for="password">
@@ -61,6 +71,7 @@
             type="password"
             placeholder="Enter your Password"
             v-model="password"
+            required
           />
         </div>
         <button type="submit" class="bg-[#ED3237] text-white py-3 px-4">
@@ -72,6 +83,7 @@
 </template>
 <script>
 import axios from "axios";
+import { useToast } from "vue-toastification/composition";
 export default {
   name: "Register",
   data() {
@@ -80,26 +92,49 @@ export default {
       email: "",
       password: "",
       phone: "",
+      error: {
+        name: "",
+        phone: "",
+      },
     };
+  },
+  setup() {
+    const toast = useToast();
   },
   methods: {
     async submit() {
-      let datas = {
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        phone: this.phone,
-      };
-      const data = await axios.post(
-        "https://restify-sahaware-boilerplate.herokuapp.com/api/auth/register",
-        datas
-      );
-      console.log(data);
-      this.$emit("close-modal");
-      this.name = "";
-      this.email = "";
-      this.password = "";
-      this.phone = "";
+      this.error.name = "";
+      this.error.phone = "";
+      if (this.name.length < 3) {
+        this.error.name = "minimum 3 character";
+      } else if (this.phone.length < 10) {
+        this.error.phone = "minimum 10 digit and start with 08xxx";
+      } else {
+        try {
+          let datas = {
+            name: this.name,
+            email: this.email,
+            password: this.password,
+            phone: this.phone,
+          };
+          const { data } = await axios.post(
+            "https://restify-sahaware-boilerplate.herokuapp.com/api/auth/register",
+            datas
+          );
+          this.$toast.success(data.message);
+          this.$emit("close-modal");
+          this.name = "";
+          this.email = "";
+          this.password = "";
+          this.phone = "";
+          this.error.name = "";
+          this.error.phone = "";
+        } catch (error) {
+          this.$toast.error("error");
+        }
+      }
+      // console.log(error.response.data.message.details[0].message);
+      // console.log(error.response.data.message);
     },
   },
 };

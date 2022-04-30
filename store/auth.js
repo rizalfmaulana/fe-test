@@ -12,6 +12,7 @@ export default {
     },
     setUser: (state, payload) => {
       state.user = payload;
+      Cookies.set("user", payload, { expires: 1 });
     },
   },
   actions: {

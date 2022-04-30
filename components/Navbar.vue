@@ -64,16 +64,22 @@
           class="w-full flex items-center lg:justify-between"
         >
           <ul :class="[open ? 'flex-col' : 'lg:flex']">
-            <NavLink name="Home" url="/" />
-            <NavLink name="Article" url="/article" />
-            <NavLink name="Create" url="/article/create" />
+            <div v-if="!token" class="flex flex-col lg:flex-row">
+              <NavLink name="Home" url="/" />
+              <NavLink name="Article" url="/article" />
+            </div>
+            <div v-else class="flex flex-col lg:flex-row">
+              <NavLink name="Home" url="/" />
+              <NavLink name="Article" url="/article" />
+              <NavLink name="Create" url="/article/create" />
+            </div>
           </ul>
           <div
             :class="[open ? 'flex-col' : 'lg:flex']"
             class="text-blue-400 text-sm"
           >
             <button v-if="!token" @click="$emit('open-modal')">Login</button>
-            <button @click="logout" v-else>Logout</button>
+            <button @click="logout" v-if="token">Logout</button>
           </div>
         </div>
       </div>
@@ -82,6 +88,7 @@
 </template>
 <script>
 import Cookies from "js-cookie";
+import { useToast } from "vue-toastification/composition";
 export default {
   name: "Navbar",
   data() {
@@ -90,9 +97,13 @@ export default {
       token: Cookies.get("token"),
     };
   },
+  setup() {
+    const toast = useToast();
+  },
   methods: {
     logout() {
       Cookies.remove("token");
+      this.$toast.info("You've been logged out");
       this.$router.go();
     },
   },

@@ -16,6 +16,9 @@
               placeholder="Enter your Article Title"
               v-model="title"
             />
+            <span class="text-red-600 text-sm" v-if="error.title">{{
+              error.title
+            }}</span>
           </div>
           <div>
             <textarea
@@ -27,6 +30,9 @@
               placeholder="Write your story"
               v-model="description"
             ></textarea>
+            <span class="text-red-600 text-sm" v-if="error.description">{{
+              error.description
+            }}</span>
           </div>
         </div>
         <div class="w-full lg:w-1/3">
@@ -44,6 +50,9 @@
               placeholder="Enter your Article Short Description"
               v-model="short_description"
             ></textarea>
+            <span class="text-red-600 text-sm" v-if="error.short_description">{{
+              error.short_description
+            }}</span>
           </div>
           <div>
             <p class="text-base">Thumbnail</p>
@@ -116,6 +125,7 @@
 import axios from "axios";
 import { mapGetters } from "vuex";
 import Cookies from "js-cookie";
+import { useToast } from "vue-toastification/composition";
 export default {
   data() {
     return {
@@ -126,7 +136,15 @@ export default {
       is_visible: false,
       category: [],
       file: "",
+      error: {
+        title: "",
+        short_description: "",
+        description: "",
+      },
     };
+  },
+  setup() {
+    const toast = useToast();
   },
   async fetch() {
     await this.getcategory();
@@ -147,29 +165,46 @@ export default {
       this.category = data.content;
     },
     async submit() {
-      let datas = {
-        title: this.title,
-        short_description: this.short_description,
-        description: this.description,
-        category_id: this.category_id,
-        is_visible: String(this.is_visible),
-        image: this.file,
-      };
-      const tokens = Cookies.get("token");
-      const { data } = await axios.post(
-        "https://restify-sahaware-boilerplate.herokuapp.com/api/article/create",
-        datas,
-        {
-          headers: {
-            Authorization: "Bearer " + tokens,
-          },
+      this.error.title = "";
+      this.error.short_description = "";
+      this.error.description = "";
+
+      if (this.title.length < 5) {
+        this.error.title = "minimum 5 character";
+      } else if (this.description.length < 10) {
+        this.error.description = "minimum 10 character";
+      } else if (this.short_description.length < 10) {
+        this.error.short_description = "minimum 10 character";
+      } else {
+        try {
+          let datas = {
+            title: this.title,
+            short_description: this.short_description,
+            description: this.description,
+            category_id: this.category_id,
+            is_visible: String(this.is_visible),
+            image: this.file,
+          };
+          const tokens = Cookies.get("token");
+          const { data } = await axios.post(
+            "https://restify-sahaware-boilerplate.herokuapp.com/api/article/create",
+            datas,
+            {
+              headers: {
+                Authorization: "Bearer " + tokens,
+              },
+            }
+          );
+          this.$toast.success(data.message);
+          this.$router.push({ path: "/article" });
+          this.name = "";
+          this.email = "";
+          this.password = "";
+          this.phone = "";
+        } catch (error) {
+          this.$toast.error("error");
         }
-      );
-      this.$router.push({ path: "/article" });
-      this.name = "";
-      this.email = "";
-      this.password = "";
-      this.phone = "";
+      }
     },
   },
 };

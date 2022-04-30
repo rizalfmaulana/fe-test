@@ -33,8 +33,22 @@ export default {
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [],
+  modules: [
+    "vue-toastification/nuxt",
 
+    // You can also pass plugin options
+    [
+      "vue-toastification/nuxt",
+      {
+        timeout: 1000,
+        draggable: false,
+      },
+    ],
+  ],
+  toast: {
+    timeout: 2000,
+    closeOnClick: false,
+  },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     postcss: {

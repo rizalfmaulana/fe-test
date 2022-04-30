@@ -25,6 +25,7 @@
             type="email"
             placeholder="Enter your Email"
             v-model="email"
+            required
           />
         </div>
         <div class="mb-12">
@@ -37,7 +38,9 @@
             type="password"
             placeholder="Enter your Password"
             v-model="password"
+            required
           />
+          <span></span>
         </div>
         <button type="sumbit" class="bg-[#ED3237] text-white py-3 px-4">
           Log in
@@ -48,7 +51,7 @@
 </template>
 <script>
 import axios from "axios";
-import Cookie from "js-cookie";
+import { useToast } from "vue-toastification/composition";
 import { mapActions } from "vuex";
 export default {
   name: "Login",
@@ -58,24 +61,32 @@ export default {
       password: "",
     };
   },
+  setup() {
+    const toast = useToast();
+  },
   methods: {
     ...mapActions({
       setToken: "auth/setToken",
     }),
     async submit() {
-      let datas = {
-        email: this.email,
-        password: this.password,
-      };
-      const { data } = await axios.post(
-        "https://restify-sahaware-boilerplate.herokuapp.com/api/auth/login",
-        datas
-      );
-      this.setToken(data.content[0].token);
-      this.$router.go();
-      this.$emit("close-modal");
-      this.email = "";
-      this.password = "";
+      try {
+        let datas = {
+          email: this.email,
+          password: this.password,
+        };
+        const { data } = await axios.post(
+          "https://restify-sahaware-boilerplate.herokuapp.com/api/auth/login",
+          datas
+        );
+        this.$toast.success(data.message);
+        this.setToken(data.content[0].token);
+        this.$router.go();
+        this.$emit("close-modal");
+        this.email = "";
+        this.password = "";
+      } catch (error) {
+        this.$toast.error(data.message);
+      }
     },
   },
 };
